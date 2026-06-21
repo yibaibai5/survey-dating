@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大学生恋爱问题调查问卷</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rose: #c44d6a; --rose-light: #fdf2f5; --rose-dark: #a33a54;
+    --bg: #faf7f8; --card-bg: #fff; --text: #2d2d2d; --text-muted: #777;
+    --border: #e8dde0; --shadow: 0 2px 12px rgba(0,0,0,.06);
+    --radius: 12px; --transition: .25s ease;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #c44d6a 0%, #d4748a 50%, #e898a8 100%);
+    color: #fff; padding: 32px 20px 28px; text-align: center;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(196,77,106,.25);
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
+  .header .sub { font-size: .88rem; opacity: .88; margin-top: 4px; }
+
+  /* Progress */
+  .progress-wrap {
+    max-width: 640px; margin: 0 auto; padding: 0 20px;
+  }
+  .progress-bar-outer {
+    height: 6px; background: rgba(255,255,255,.3); border-radius: 3px;
+    margin-top: 16px; overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%; background: #fff; border-radius: 3px; transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-text { font-size: .78rem; margin-top: 6px; opacity: .8; }
+
+  /* Main */
+  .main {
+    max-width: 640px; margin: 0 auto; padding: 20px 16px 80px;
+  }
+
+  /* Section */
+  .section {
+    background: var(--card-bg); border-radius: var(--radius); padding: 28px 24px;
+    margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border);
+    transition: opacity .3s;
+  }
+  .section.hidden { display: none; }
+  .section-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    padding-bottom: 14px; border-bottom: 2px solid var(--rose-light);
+  }
+  .section-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--rose); color: #fff; font-size: .85rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .section-title { font-size: 1.08rem; font-weight: 700; color: var(--rose-dark); }
+  .section-sub { font-size: .8rem; color: var(--text-muted); margin-left: auto; }
+
+  /* Question */
+  .q {
+    margin-bottom: 22px; padding-bottom: 18px;
+    border-bottom: 1px solid #f5f0f1;
+  }
+  .q:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .q-label {
+    font-size: .95rem; font-weight: 600; margin-bottom: 10px; color: #333;
+  }
+  .q-num { color: var(--rose); font-weight: 700; margin-right: 4px; }
+  .q-type-tag {
+    font-size: .72rem; color: var(--text-muted); font-weight: 400;
+    background: #f8f4f5; padding: 1px 8px; border-radius: 10px;
+    margin-left: 6px; white-space: nowrap;
+  }
+  .q-note {
+    font-size: .8rem; color: var(--text-muted); font-style: italic; margin-bottom: 6px;
+  }
+
+  /* Options */
+  .opts { display: flex; flex-direction: column; gap: 6px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px;
+    border-radius: 8px; cursor: pointer; transition: background var(--transition);
+    border: 1.5px solid transparent;
+  }
+  .opt:hover { background: #fdf5f7; }
+  .opt input { display: none; }
+  .opt-radio {
+    width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid #ccc; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .opt-check {
+    font-size: 1.3rem; line-height: 1; flex-shrink: 0;
+    width: 22px; text-align: center;
+    transition: color .2s;
+  }
+  .opt.selected { border-color: var(--rose) !important; background: #fef6f8 !important; }
+  .opt.selected .opt-radio { border-color: var(--rose); }
+  .opt.selected .opt-radio::after {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--rose);
+  }
+  .opt-text { font-size: .9rem; line-height: 1.5; }
+
+  /* Likert */
+  .likert-row {
+    display: flex; align-items: center; gap: 0;
+    background: #faf7f8; border-radius: 10px; padding: 4px;
+  }
+  .likert-opt {
+    flex: 1; text-align: center; padding: 10px 4px; cursor: pointer;
+    border-radius: 8px; transition: all var(--transition);
+    font-size: .8rem; color: var(--text-muted); user-select: none;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .likert-opt:hover { background: #fdf5f7; color: var(--rose); }
+  .likert-opt.selected { background: var(--rose); color: #fff; font-weight: 600; }
+  .likert-opt input { display: none; }
+  .likert-labels {
+    display: flex; justify-content: space-between; font-size: .72rem;
+    color: var(--text-muted); margin-top: 4px; padding: 0 4px;
+  }
+  .likert-circle {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 600; transition: all var(--transition);
+  }
+  .likert-opt.selected .likert-circle { border-color: #fff; }
+
+  /* Warning banner */
+  .warning-banner {
+    background: #fff8e1; border-left: 3px solid #f0c040;
+    padding: 10px 14px; border-radius: 6px; margin-bottom: 14px;
+    font-size: .82rem; color: #8a6d14;
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+  .btn {
+    padding: 12px 32px; border-radius: 8px; font-size: .95rem; font-weight: 600;
+    cursor: pointer; border: none; transition: all var(--transition);
+  }
+  .btn-primary { background: var(--rose); color: #fff; }
+  .btn-primary:hover { background: var(--rose-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(196,77,106,.35); }
+  .btn-outline { background: #fff; color: var(--rose); border: 2px solid var(--rose); }
+  .btn-outline:hover { background: var(--rose-light); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Results */
+  .result-card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 32px 24px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .result-section { margin-bottom: 20px; }
+  .result-section h3 {
+    font-size: 1rem; color: var(--rose-dark); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--rose-light);
+  }
+  .result-item {
+    display: flex; justify-content: space-between; padding: 4px 0;
+    font-size: .88rem;
+  }
+  .result-item .q-text { color: var(--text-muted); flex: 1; }
+  .result-item .a-text { font-weight: 600; text-align: right; max-width: 55%; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 10px 24px; border-radius: 20px;
+    font-size: .85rem; z-index: 999; opacity: 0; transition: opacity .3s;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .header h1 { font-size: 1.2rem; }
+    .section { padding: 20px 14px; }
+    .likert-opt { font-size: .7rem; padding: 8px 2px; }
+    .likert-circle { width: 24px; height: 24px; font-size: .7rem; }
+  }
+
+  /* ===== 结果页 ===== */
+  #main .result-hero {
+    text-align: center; padding: 8px 0 20px;
+  }
+  #main .result-hero h2 { color: var(--rose-dark); margin-bottom: 4px; font-size: 1.3rem; }
+  #main .result-subtitle { color: var(--text-muted); font-size: .85rem; }
+
+  /* 类型徽章 */
+  #main .type-badge-card {
+    border-radius: 20px; padding: 32px 20px 24px; margin-bottom: 16px;
+    text-align: center; color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,.10);
+    animation: fadeInUp .5s cubic-bezier(0.16,1,0.3,1);
+  }
+  #main .type-badge-card .big-emoji { font-size: 3.5rem; display: block; margin-bottom: 8px; }
+  #main .type-badge-card .type-name { font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; margin-bottom: 4px; }
+  #main .type-badge-card .type-subtitle { font-size: .9rem; opacity: .9; font-style: italic; max-width: 320px; margin: 0 auto; }
+  #main .type-badge-card .type-desc { font-size: .85rem; opacity: .92; max-width: 420px; margin: 12px auto 0; line-height: 1.7; }
+
+  /* 维度进度条 */
+  #main .dims-card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 24px 20px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  #main .dims-card h3 { color: var(--rose-dark); margin-bottom: 16px; font-size: 1rem; }
+  #main .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  #main .dim-label { width: 75px; font-size: .82rem; font-weight: 600; color: #555; text-align: right; flex-shrink: 0; }
+  #main .dim-bar-wrap { flex: 1; height: 22px; background: #f0eaec; border-radius: 11px; overflow: hidden; position: relative; }
+  #main .dim-bar-fill { height: 100%; border-radius: 11px; transition: width .8s cubic-bezier(0.16,1,0.3,1); }
+  #main .dim-score { width: 32px; font-size: .8rem; font-weight: 700; color: #888; text-align: center; }
+
+  /* 雷达图 */
+  #main .chart-card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 16px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* 标签云 */
+  #main .tags-card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 16px 20px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+    text-align: center;
+  }
+  #main .tag {
+    display: inline-block; padding: 4px 14px; border-radius: 14px;
+    font-size: .8rem; font-weight: 600; margin: 3px 4px;
+    background: #fdf2f5; color: #c44d6a; border: 1px solid #f0d0d8;
+  }
+
+  /* 洞察卡片 */
+  #main .insights-card {
+    background: var(--card-bg); border-radius: var(--radius); padding: 24px 20px;
+    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  #main .insights-card h3 { color: var(--rose-dark); margin-bottom: 14px; font-size: 1rem; }
+  #main .insight-item {
+    display: flex; gap: 10px; padding: 12px 14px; margin-bottom: 8px;
+    background: #fdf8f9; border-radius: 10px; font-size: .88rem; line-height: 1.6;
+    border-left: 3px solid var(--rose);
+  }
+  #main .insight-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  #main .insight-text { color: #444; }
+
+  /* 答案折叠 */
+  #main .answers-detail { margin-top: 16px; }
+  #main .answers-toggle {
+    background: none; border: 1px dashed #ccc; color: #999; font-size: .82rem;
+    padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all var(--transition);
+  }
+  #main .answers-toggle:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* 动画 */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="progress-wrap">
+    <h1>大学生恋爱问题调查问卷</h1>
+    <p class="sub">完全匿名 · 约 14-18 分钟 · 请根据真实情况填写</p>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">0 / 55 题已回答</p>
+  </div>
+</div>
+
+<div class="main" id="main"></div>
+
+<div style="text-align:center;margin-top:8px;" id="actionArea">
+  <button class="btn btn-primary" id="btnSubmit" onclick="submitSurvey()">提交问卷</button>
+  <button class="btn btn-outline" id="btnReset" onclick="resetSurvey()" style="margin-left:8px;">重新填写</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Supabase 配置 =====
+// 去 supabase.com 用 GitHub 登录 → 创建项目 → Settings → API → 复制以下两项
+const SUPABASE_URL = 'https://fxatolhgodoxqjwfphppk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4YXRvbGhnZG94cWp3ZnBocHBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NTU2ODcsImV4cCI6MjA5NzUzMTY4N30.oSCcN2XK7CHJggNVGh9nTg_SvyiU8WgvElrHJynR8CY';
+const SUPABASE_TABLE = 'SurveyAnswer';              // 数据表名
+
+// ===== DATA =====
+const ALL_QUESTIONS = [
+  // 一、基本信息
+    {id:1, sec:"一、基本信息（5题）", type:"radio", text:"你的性别是？", opts:[{v:"A",t:"男"},{v:"B",t:"女"},{v:"C",t:"其他 / 不愿透露"}]},
+    {id:2, sec:"一、基本信息（5题）", type:"radio", text:"你所在的年级是？", opts:[{v:"A",t:"大一"},{v:"B",t:"大二"},{v:"C",t:"大三"},{v:"D",t:"大四 / 大五"},{v:"E",t:"研究生及以上"}]},
+    {id:3, sec:"一、基本信息（5题）", type:"radio", text:"你就读的学校类型是？", opts:[{v:"A",t:"985 / 211 / 双一流高校"},{v:"B",t:"普通本科院校"},{v:"C",t:"专科 / 高职院校"}]},
+    {id:4, sec:"一、基本信息（5题）", type:"radio", text:"你所学的专业类别是？", opts:[{v:"A",t:"理工科"},{v:"B",t:"文史哲 / 社科"},{v:"C",t:"经管 / 法学"},{v:"D",t:"医学"},{v:"E",t:"艺术 / 体育"},{v:"F",t:"其他"}]},
+    {id:5, sec:"一、基本信息（5题）", type:"radio", text:"你的家庭所在地是？", opts:[{v:"A",t:"一线城市（北上广深）"},{v:"B",t:"省会城市 / 新一线城市"},{v:"C",t:"地级市 / 县城"},{v:"D",t:"乡镇 / 农村"}]},
+
+  // 二、恋爱经历
+    {id:6, sec:"二、恋爱经历（8题）", type:"radio", text:"你目前的恋爱状态是？", opts:[{v:"A",t:"正在恋爱中"},{v:"B",t:"单身，从未谈过恋爱"},{v:"C",t:"单身，曾经谈过恋爱"},{v:"D",t:"暧昧中 / 说不清"},{v:"E",t:"已订婚 / 已婚"}]},
+    {id:7, sec:"二、恋爱经历（8题）", type:"radio", text:"你至今谈过几次恋爱？", opts:[{v:"A",t:"0 次"},{v:"B",t:"1 次"},{v:"C",t:"2 次"},{v:"D",t:"3 次及以上"}]},
+    {id:8, sec:"二、恋爱经历（8题）", type:"radio", text:"你的初恋发生在什么时候？", opts:[{v:"A",t:"初中及以前"},{v:"B",t:"高中"},{v:"C",t:"大一"},{v:"D",t:"大二"},{v:"E",t:"大三及以上"},{v:"F",t:"尚未恋爱"}]},
+    {id:9, sec:"二、恋爱经历（8题）", type:"radio", text:"你目前（或最近一次）恋爱的持续时间是？", opts:[{v:"A",t:"3 个月以内"},{v:"B",t:"3-6 个月"},{v:"C",t:"6 个月 - 1 年"},{v:"D",t:"1-3 年"},{v:"E",t:"3 年以上"},{v:"F",t:"尚未恋爱"}], showIf:q=>getVal(6)!=="B"},
+    {id:10, sec:"二、恋爱经历（8题）", type:"checkbox", text:"你和恋爱对象是如何认识的？", max:2, opts:[{v:"A",t:"同班同学 / 同专业"},{v:"B",t:"社团 / 学生会活动"},{v:"C",t:"朋友介绍"},{v:"D",t:"社交软件（探探、Soul 等）"},{v:"E",t:"校园表白墙 / 校园论坛"},{v:"F",t:"图书馆 / 自习室偶遇"},{v:"G",t:"其他"}], showIf:q=>getVal(6)!=="B"},
+    {id:11, sec:"二、恋爱经历（8题）", type:"radio", text:"你目前是异地恋吗？", opts:[{v:"A",t:"是，同城不同校"},{v:"B",t:"是，不同城市"},{v:"C",t:"不是异地恋"},{v:"D",t:"目前单身 / 未恋爱"}], showIf:q=>getVal(6)!=="B"},
+    {id:12, sec:"二、恋爱经历（8题）", type:"radio", text:"你有过网恋经历吗？（指主要通过线上交流建立恋爱关系）", opts:[{v:"A",t:"有，且奔现过（线下见面）"},{v:"B",t:"有，但从未奔现"},{v:"C",t:"没有网恋过"},{v:"D",t:"不确定算不算"}]},
+    {id:13, sec:"二、恋爱经历（8题）", type:"likert", text:"你认为自己在恋爱市场上的受欢迎程度如何？（综合外貌、性格、社交能力等）", note:"1=非常不受欢迎 · 5=非常受欢迎"},
+
+  // 三、恋爱观念（Likert）
+    {id:14, sec:"三、恋爱观念（6题）", type:"likert", text:"大学期间的恋爱是「必修课」——没谈过就是遗憾。", note:"1=非常不同意 · 5=非常同意"},
+    {id:15, sec:"三、恋爱观念（6题）", type:"likert", text:"大学恋情大多「毕业即分手」。", note:"1=非常不同意 · 5=非常同意"},
+    {id:16, sec:"三、恋爱观念（6题）", type:"likert", text:"恋爱应该「以结婚为目的」。", note:"1=非常不同意 · 5=非常同意"},
+    {id:17, sec:"三、恋爱观念（6题）", type:"likert", text:"你能接受「姐弟恋」（女生比男生大 3 岁以上）。", note:"1=非常不同意 · 5=非常同意"},
+    {id:18, sec:"三、恋爱观念（6题）", type:"likert", text:"「门当户对」（家庭背景相当）对恋爱关系很重要。", note:"1=非常不同意 · 5=非常同意"},
+    {id:19, sec:"三、恋爱观念（6题）", type:"likert", text:"恋爱中的花费应该主要由男方承担。", note:"1=非常不同意 · 5=非常同意"},
+
+  // 四、恋爱动机
+    {id:20, sec:"四、恋爱动机（6题）", type:"radio", text:"你谈恋爱最主要的原因是什么？", opts:[{v:"A",t:"遇到了真心喜欢的人"},{v:"B",t:"大学太无聊，寻找陪伴"},{v:"C",t:"周围人都在谈，不想落后"},{v:"D",t:"积累恋爱经验，为以后做准备"},{v:"E",t:"满足生理 / 情感需求"},{v:"F",t:"对方追求，顺其自然就在一起了"}]},
+    {id:21, sec:"四、恋爱动机（6题）", type:"radio", text:"你认为大学恋爱最大的意义是什么？", opts:[{v:"A",t:"学会如何爱人 / 被爱，是成长的一部分"},{v:"B",t:"找到人生伴侣"},{v:"C",t:"丰富大学生活，增加快乐"},{v:"D",t:"排解孤独和压力"},{v:"E",t:"其他"}]},
+    {id:22, sec:"四、恋爱动机（6题）", type:"radio", text:"以下哪种说法最接近你的想法？", opts:[{v:"A",t:"大学必须谈一场恋爱"},{v:"B",t:"有合适的就谈，没有也不强求"},{v:"C",t:"大学期间不想谈恋爱，先搞好学业"},{v:"D",t:"对恋爱没什么兴趣"}]},
+    {id:23, sec:"四、恋爱动机（6题）", type:"radio", text:"如果大学四年都没谈恋爱，你会感到？", opts:[{v:"A",t:"非常遗憾"},{v:"B",t:"有点遗憾"},{v:"C",t:"无所谓"},{v:"D",t:"反而觉得挺好，省去很多麻烦"}]},
+    {id:24, sec:"四、恋爱动机（6题）", type:"checkbox", text:"选择恋爱对象时，你最看重什么？（选最重要的 3 项并排序）", max:3, opts:[{v:"A",t:"外貌 / 身材"},{v:"B",t:"性格 / 脾气"},{v:"C",t:"三观契合度"},{v:"D",t:"经济条件"},{v:"E",t:"学历 / 能力"},{v:"F",t:"家庭背景"},{v:"G",t:"兴趣爱好"},{v:"H",t:"对我好 / 体贴"}], note:"勾选时按重要性顺序点击——第一个勾选 = 最重要"},
+    {id:25, sec:"四、恋爱动机（6题）", type:"radio", text:"你理想中多少岁结婚？", opts:[{v:"A",t:"22-25 岁"},{v:"B",t:"26-28 岁"},{v:"C",t:"29-32 岁"},{v:"D",t:"33 岁以上"},{v:"E",t:"没想过 / 不想结婚"}]},
+
+  // 五、冲突与困扰
+    {id:26, sec:"五、恋爱中的冲突与困扰（5题）", type:"radio", text:"你和伴侣吵架最主要的导火索是什么？", opts:[{v:"A",t:"陪伴时间不够 / 被冷落"},{v:"B",t:"异性朋友 / 吃醋"},{v:"C",t:"金钱消费分歧"},{v:"D",t:"未来规划不一致（考研、就业、城市等）"},{v:"E",t:"性格 / 三观不合"},{v:"F",t:"生活琐事（消息不回、忘记纪念日等）"},{v:"G",t:"家人反对 / 干涉"},{v:"H",t:"其他"},{v:"I",t:"很少吵架"}], showIf:q=>getVal(6)!=="B"},
+    {id:27, sec:"五、恋爱中的冲突与困扰（5题）", type:"checkbox", text:"你在恋爱中最大的困扰是什么？", max:3, showIf:q=>getVal(6)!=="B", opts:[{v:"A",t:"不会表达自己的感受和需求"},{v:"B",t:"对方太黏人 / 控制欲强，失去个人空间"},{v:"C",t:"缺乏共同话题，相处越来越无聊"},{v:"D",t:"学业压力和恋爱难以平衡"},{v:"E",t:"消费压力大，谈恋爱太花钱"},{v:"F",t:"对这段关系没有安全感，总怕分手"},{v:"G",t:"性方面的分歧或困扰"},{v:"H",t:"周围人不看好 / 社交压力"},{v:"I",t:"没什么困扰"}]},
+    {id:28, sec:"五、恋爱中的冲突与困扰（5题）", type:"radio", text:"当你和伴侣发生矛盾时，你通常怎么做？", opts:[{v:"A",t:"主动沟通，正面解决"},{v:"B",t:"冷战，等对方先开口"},{v:"C",t:"找朋友倾诉，但不直接跟对方说"},{v:"D",t:"假装没事，回避冲突"},{v:"E",t:"直接提分手"},{v:"F",t:"其他"}], showIf:q=>getVal(6)!=="B"},
+    {id:29, sec:"五、恋爱中的冲突与困扰（5题）", type:"radio", text:"你是否经历过「恋爱脑」状态？（即把全部精力放在恋爱上，严重忽略学业、朋友和自我成长）", opts:[{v:"A",t:"正在经历"},{v:"B",t:"曾经经历过，现在已经走出来了"},{v:"C",t:"没有经历过"},{v:"D",t:"不太清楚什么是「恋爱脑」"}]},
+    {id:30, sec:"五、恋爱中的冲突与困扰（5题）", type:"radio", text:"你如何看待恋爱中的 PUA（精神控制）现象？", opts:[{v:"A",t:"身边就有这种情况，很常见"},{v:"B",t:"听说过，但身边没有"},{v:"C",t:"只在网上看到过，离自己很远"},{v:"D",t:"不太了解 PUA 是什么"}]},
+
+  // 六、网络恋爱
+    {id:31, sec:"六、网络恋爱（4题）", type:"checkbox", text:"你使用过以下哪些社交 / 交友软件？", opts:[{v:"A",t:"探探"},{v:"B",t:"Soul"},{v:"C",t:"陌陌"},{v:"D",t:"积目"},{v:"E",t:"校园类（Summer、青藤之恋等）"},{v:"F",t:"未使用过任何交友软件"},{v:"G",t:"其他"}]},
+    {id:32, sec:"六、网络恋爱（4题）", type:"radio", text:"你对网恋的整体态度是？", opts:[{v:"A",t:"可以接受，和线下恋爱没什么区别"},{v:"B",t:"可以接受，但不太靠谱，风险较高"},{v:"C",t:"不太能接受，更喜欢从现实接触开始"},{v:"D",t:"完全不接受，网恋不真实"}]},
+    {id:33, sec:"六、网络恋爱（4题）", type:"radio", text:"如果你有过网恋奔现经历，体验如何？", opts:[{v:"A",t:"很好，和线上感觉一致甚至更好"},{v:"B",t:"一般，和线上感觉有差距但可以接受"},{v:"C",t:"不好，线上线下的差距太大"},{v:"D",t:"没有奔现经历"}]},
+    {id:34, sec:"六、网络恋爱（4题）", type:"radio", text:"你会在社交媒体（朋友圈/微博/抖音等）上公开恋爱关系吗？", showIf:q=>getVal(6)!=="B", opts:[{v:"A",t:"会主动发合照/官宣，不介意被看到"},{v:"B",t:"会发，但会分组屏蔽家人/某些人"},{v:"C",t:"偶尔发，不会刻意公开"},{v:"D",t:"完全不会发，恋爱是私事"},{v:"E",t:"目前未恋爱"}]},
+
+  // 七、性观念与性行为
+    {id:35, sec:"七、性观念与性行为（5题）", type:"radio", text:"你对大学期间发生性行为的态度是？", opts:[{v:"A",t:"完全接受，是成年人之间的正常选择"},{v:"B",t:"可以接受，但前提是建立在稳定感情基础上"},{v:"C",t:"不太接受，大学期间应该克制"},{v:"D",t:"完全不接受，反对婚前性行为"},{v:"E",t:"不愿回答"}], warning:"本板块为敏感话题，所有题目均可选择「不愿回答」。数据仅用于学术分析，不关联个人身份。"},
+    {id:36, sec:"七、性观念与性行为（5题）", type:"radio", text:"你对自己避孕知识的了解程度如何评价？", opts:[{v:"A",t:"非常了解，清楚各种避孕方式的优缺点"},{v:"B",t:"基本了解，知道常见的避孕方法"},{v:"C",t:"了解不多，只有零散的知识"},{v:"D",t:"几乎不了解"},{v:"E",t:"不愿回答"}]},
+    {id:37, sec:"七、性观念与性行为（5题）", type:"radio", text:"你是否在学校接受过系统的性教育（包括避孕、性健康、性同意等）？", opts:[{v:"A",t:"接受过，且内容比较全面"},{v:"B",t:"接受过，但内容很形式化、帮助不大"},{v:"C",t:"从未在学校接受过性教育"},{v:"D",t:"不愿回答"}]},
+    {id:38, sec:"七、性观念与性行为（5题）", type:"checkbox", text:"你希望学校在性教育方面提供什么？", opts:[{v:"A",t:"避孕与性健康知识"},{v:"B",t:"恋爱心理与亲密关系沟通"},{v:"C",t:"性同意与自我保护（防性侵、防 PUA）"},{v:"D",t:"LGBTQ+ 相关议题"},{v:"E",t:"不需要，学校不应该介入这些"},{v:"F",t:"其他"}]},
+    {id:39, sec:"七、性观念与性行为（5题）", type:"radio", text:"你是否会和伴侣（或潜在伴侣）明确讨论性方面的界限和意愿？", opts:[{v:"A",t:"会主动讨论，这是必要的沟通"},{v:"B",t:"会聊一点，但不太深入"},{v:"C",t:"想聊但不知道怎么开口"},{v:"D",t:"不会，觉得尴尬/没必要"},{v:"E",t:"不愿回答"}]},
+
+  // 八、家庭影响
+    {id:40, sec:"八、家庭影响（4题）", type:"radio", text:"你的父母对你大学期间谈恋爱持什么态度？", opts:[{v:"A",t:"明确支持，鼓励我多接触"},{v:"B",t:"不反对，顺其自然"},{v:"C",t:"态度模糊，没有明确聊过"},{v:"D",t:"不太支持，希望以学业为重"},{v:"E",t:"明确反对"}]},
+    {id:41, sec:"八、家庭影响（4题）", type:"radio", text:"你是否带过恋爱对象见家长（或正在计划）？", opts:[{v:"A",t:"已经见过，且家长认可"},{v:"B",t:"已经见过，但家长不太认可"},{v:"C",t:"计划中，打算在适当时机见"},{v:"D",t:"没想过，感情还没到那个阶段"},{v:"E",t:"未恋爱"}]},
+    {id:42, sec:"八、家庭影响（4题）", type:"radio", text:"家庭意见对你恋爱决策的影响有多大？", opts:[{v:"A",t:"影响很大，家人反对的话我会认真考虑分手"},{v:"B",t:"有一定影响，会参考但最终自己决定"},{v:"C",t:"基本不影响，恋爱是自己的事"},{v:"D",t:"没遇到过这种情况，不确定"}]},
+    {id:43, sec:"八、家庭影响（4题）", type:"radio", text:"你认为父母的婚姻关系，对你恋爱观的影响程度是？", opts:[{v:"A",t:"很大——父母感情好，让我相信爱情、期待婚姻"},{v:"B",t:"很大——父母感情不好，让我对亲密关系有戒备或不自信"},{v:"C",t:"有一定影响，但说不清具体是什么"},{v:"D",t:"没什么影响，我的恋爱观主要来自自身经历和同龄人"}]},
+
+  // 九、恋爱与学业
+    {id:44, sec:"九、恋爱与学业（3题）", type:"radio", text:"恋爱对你的学习成绩有什么影响？", opts:[{v:"A",t:"明显变好——有人一起学习，互相督促"},{v:"B",t:"稍微变好"},{v:"C",t:"没什么影响"},{v:"D",t:"稍微变差"},{v:"E",t:"明显变差——谈恋爱花太多时间和精力"},{v:"F",t:"未恋爱"}], showIf:q=>getVal(6)!=="B"},
+    {id:45, sec:"九、恋爱与学业（3题）", type:"checkbox", text:"你是否因为恋爱而做出过以下「牺牲」？", opts:[{v:"A",t:"为了和对方同城而放弃更好的考研 / 就业机会"},{v:"B",t:"为了陪伴对方减少了学习时间"},{v:"C",t:"为了对方疏远了原来的朋友"},{v:"D",t:"为了对方改变了原有的兴趣和习惯"},{v:"E",t:"都没有"}]},
+    {id:46, sec:"九、恋爱与学业（3题）", type:"radio", text:"如果你考研 / 就业方向与伴侣不一致，你会怎么选择？", opts:[{v:"A",t:"优先考虑自己的发展"},{v:"B",t:"优先考虑和伴侣在一起"},{v:"C",t:"尽量折中，找个两者兼顾的方案"},{v:"D",t:"没想过这个问题"},{v:"E",t:"未恋爱"}]},
+
+  // 十、恋爱消费
+    {id:47, sec:"十、恋爱消费（4题）", type:"radio", text:"如果恋爱的话，你每个月预计会在恋爱上花多少钱？（包括约会、礼物、共同消费等）", opts:[{v:"A",t:"300 元以下"},{v:"B",t:"300-800 元"},{v:"C",t:"800-1500 元"},{v:"D",t:"1500-3000 元"},{v:"E",t:"3000 元以上"},{v:"F",t:"目前未恋爱"}]},
+    {id:48, sec:"十、恋爱消费（4题）", type:"radio", text:"你的恋爱经费主要来源是？", opts:[{v:"A",t:"父母给的生活费"},{v:"B",t:"兼职 / 实习收入"},{v:"C",t:"奖学金"},{v:"D",t:"花呗 / 信用卡 / 借贷"},{v:"E",t:"其他"}], showIf:q=>getVal(6)!=="B"},
+    {id:49, sec:"十、恋爱消费（4题）", type:"radio", text:"你是否因为恋爱消费而感到经济压力？", opts:[{v:"A",t:"压力很大，经常为钱发愁"},{v:"B",t:"有一定压力"},{v:"C",t:"基本没有压力"},{v:"D",t:"完全没有压力"},{v:"E",t:"目前未恋爱"}]},
+    {id:50, sec:"十、恋爱消费（4题）", type:"radio", text:"你最近一次约会，实际是谁买单？", opts:[{v:"A",t:"男方全付"},{v:"B",t:"男方付大部分"},{v:"C",t:"AA / 各付各的"},{v:"D",t:"女方付大部分"},{v:"E",t:"女方全付"},{v:"F",t:"目前未恋爱 / 记不清"}], showIf:q=>getVal(6)!=="B"},
+
+  // 十一、心理健康
+    {id:51, sec:"十一、心理健康（4题）", type:"radio", text:"失恋后你是否经历过持续两周以上的情绪低落、失眠或焦虑？", opts:[{v:"A",t:"经历过，且影响到了正常学习和生活"},{v:"B",t:"经历过，但在可控范围内"},{v:"C",t:"短暂难受了几天就恢复了"},{v:"D",t:"没有失恋过 / 分手后没什么感觉"},{v:"E",t:"未曾恋爱"}]},
+    {id:52, sec:"十一、心理健康（4题）", type:"radio", text:"你是否曾因恋爱相关问题寻求过心理咨询？（包括学校心理中心、社会机构等）", opts:[{v:"A",t:"是，得到了有效的帮助"},{v:"B",t:"是，但帮助不大"},{v:"C",t:"想过但没去，不知道去哪或不好意思"},{v:"D",t:"从未需要过"},{v:"E",t:"不愿回答"}]},
+    {id:53, sec:"十一、心理健康（4题）", type:"radio", text:"在恋爱关系中，你是否曾感到「两个人在一起，却更孤独」？", opts:[{v:"A",t:"经常有这种感觉"},{v:"B",t:"偶尔有"},{v:"C",t:"从未有过，恋爱让我感到充实"},{v:"D",t:"未曾恋爱"}], showIf:q=>getVal(6)!=="B"},
+    {id:54, sec:"十一、心理健康（4题）", type:"likert", text:"「我的自我价值感会因为恋爱状态而波动」（单身时自我怀疑，恋爱时更自信，失恋后觉得自己一无是处）——你同意吗？", note:"1=非常不同意 · 5=非常同意"},
+
+  // 十二、开放题
+    {id:55, sec:"十二、开放式问题（1题）", type:"textarea", text:"用一句话描述你对大学恋爱的看法，或者你想对同龄人说的话。", placeholder:"选填，100 字以内", maxlen:100},
+];
+
+// ===== STATE =====
+let answers = {};       // {id: value}  — value is string for radio/likert/textarea, array for checkbox
+let submitted = false;
+
+// ===== HELPERS =====
+function getVal(id) { return answers[id]; }
+function isAnswered(id) {
+  const v = answers[id];
+  if (v === undefined || v === null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  return v !== '';
+}
+function countAnswered() {
+  const visIds = new Set(visibleQuestions().map(q=>q.id));
+  let n = 0;
+  for (let i=1; i<=55; i++) if (visIds.has(i) && isAnswered(i)) n++;
+  return n;
+}
+function totalVisible() { return visibleQuestions().length; }
+
+// ===== RENDER =====
+function visibleQuestions() {
+  return ALL_QUESTIONS.filter(q => {
+    if (!q.showIf) return true;
+    return q.showIf(q);
+  });
+}
+
+function renderAll() {
+  const main = document.getElementById('main');
+  const answeredSet = new Set();
+  let html = '';
+  let currentSec = '';
+
+  const vis = visibleQuestions();
+  const visIds = new Set(vis.map(q=>q.id));
+
+  for (const q of ALL_QUESTIONS) {
+    const hidden = !visIds.has(q.id);
+
+    // Section header
+    if (q.sec !== currentSec) {
+      if (currentSec) html += '</div>'; // close previous section
+      currentSec = q.sec;
+      const secNum = currentSec.match(/^[一二三四五六七八九十]+/)?.[0] || '';
+      html += `<div class="section${hidden?' hidden':''}" data-section="${currentSec}">`;
+      html += `<div class="section-header"><div class="section-num">${secNum||'?'}</div><span class="section-title">${currentSec}</span></div>`;
+      if (q.warning) {
+        html += `<div class="warning-banner">⚠️ ${q.warning}</div>`;
+      }
+    } else if (q.warning) {
+      html += `<div class="warning-banner">⚠️ ${q.warning}</div>`;
+    }
+
+    html += `<div class="q" data-qid="${q.id}"${hidden?' style="display:none"':''}>`;
+    html += `<div class="q-label"><span class="q-num">${q.id}.</span>${q.text}`;
+    if (q.type === 'checkbox') html += `<span class="q-type-tag">可多选${q.max?'（最多'+q.max+'项）':''}</span>`;
+    else if (q.type === 'likert') html += `<span class="q-type-tag">量表</span>`;
+    html += `</div>`;
+    if (q.note) html += `<div class="q-note">${q.note}</div>`;
+
+    // Render options
+    if (q.type === 'radio') {
+      html += `<div class="opts">`;
+      for (const o of q.opts) {
+        const sel = getVal(q.id) === o.v ? ' selected' : '';
+        html += `<label class="opt${sel}" onclick="setRadio(${q.id},'${o.v}',this)"><input type="radio" name="q${q.id}" value="${o.v}"${sel?' checked':''}><span class="opt-radio"></span><span class="opt-text">${o.v}. ${o.t}</span></label>`;
+      }
+      html += `</div>`;
+    } else if (q.type === 'checkbox') {
+      html += `<div class="opts">`;
+      const vals = Array.isArray(answers[q.id]) ? answers[q.id] : [];
+      for (const o of q.opts) {
+        const sel = vals.includes(o.v) ? ' selected' : '';
+        html += `<label class="opt${sel}" onclick="toggleCheck(${q.id},'${o.v}',this,${q.max||999})"><span class="opt-check" style="font-size:1.2rem;">${vals.includes(o.v)?'☑':'☐'}</span><span class="opt-text">${o.v}. ${o.t}</span></label>`;
+      }
+      html += `</div>`;
+    } else if (q.type === 'likert') {
+      html += `<div class="likert-row">`;
+      for (let i=1; i<=5; i++) {
+        const sel = getVal(q.id) === String(i) ? ' selected' : '';
+        html += `<label class="likert-opt${sel}" onclick="setRadio(${q.id},'${i}',this)"><input type="radio" name="q${q.id}" value="${i}"${sel?' checked':''}><span class="likert-circle">${i}</span></label>`;
+      }
+      html += `</div><div class="likert-labels"><span>非常不同意</span><span>非常同意</span></div>`;
+    } else if (q.type === 'textarea') {
+      html += `<textarea style="width:100%;padding:12px;border:2px solid #e0d8da;border-radius:8px;font-size:.9rem;resize:vertical;min-height:80px;font-family:inherit;" placeholder="${q.placeholder||''}" maxlength="${q.maxlen||200}" oninput="setText(${q.id},this.value)">${answers[q.id]||''}</textarea>`;
+    }
+
+    html += `</div>`;
+  }
+  if (currentSec) html += '</div>'; // close last section
+
+  main.innerHTML = html;
+
+  // Re-apply hidden state to sections where ALL questions are hidden
+  const sections = main.querySelectorAll('.section');
+  for (const sec of sections) {
+    const visibleQs = sec.querySelectorAll('.q:not([style*="display:none"])');
+    if (visibleQs.length === 0) sec.classList.add('hidden');
+    else sec.classList.remove('hidden');
+  }
+
+  updateProgress();
+  saveToLocal();
+}
+
+function updateProgress() {
+  const n = countAnswered();
+  const total = visibleQuestions().length;
+  const pct = total > 0 ? Math.round(n / total * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = n + ' / ' + total + ' 题已回答';
+}
+
+// ===== ANSWER HANDLERS =====
+function setRadio(qid, value, labelEl) {
+  answers[qid] = value;
+  // Update UI in the same question group
+  const qDiv = labelEl.closest('.q');
+  if (qDiv) {
+    qDiv.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+    qDiv.querySelectorAll('.likert-opt').forEach(o => o.classList.remove('selected'));
+  }
+  labelEl.classList.add('selected');
+  updateProgress();
+  saveToLocal();
+  // Re-render to update conditional visibility
+  if (qid === 6) renderAll();
+}
+
+function toggleCheck(qid, value, labelEl, max) {
+  if (!Array.isArray(answers[qid])) answers[qid] = [];
+  const arr = answers[qid];
+  const idx = arr.indexOf(value);
+  const checkSpan = labelEl.querySelector('.opt-check');
+
+  if (idx >= 0) {
+    arr.splice(idx, 1);
+    labelEl.classList.remove('selected');
+    if (checkSpan) checkSpan.textContent = '☐';
+  } else {
+    if (arr.length >= max) {
+      const removed = arr.shift();
+      const qDiv = labelEl.closest('.q');
+      if (qDiv) {
+        const oldOpt = qDiv.querySelector('.opt.selected');
+        if (oldOpt) {
+          oldOpt.classList.remove('selected');
+          const oldCs = oldOpt.querySelector('.opt-check');
+          if (oldCs) oldCs.textContent = '☐';
+        }
+      }
+    }
+    arr.push(value);
+    labelEl.classList.add('selected');
+    if (checkSpan) checkSpan.textContent = '☑';
+  }
+  updateProgress();
+  saveToLocal();
+}
+function setText(qid, value) {
+  answers[qid] = value;
+  updateProgress();
+  saveToLocal();
+}
+
+// ===== PERSISTENCE =====
+function saveToLocal() {
+  try { localStorage.setItem('survey_college_dating', JSON.stringify(answers)); } catch(e) {}
+}
+function loadFromLocal() {
+  try {
+    const raw = localStorage.getItem('survey_college_dating');
+    if (raw) answers = JSON.parse(raw);
+  } catch(e) {}
+}
+
+// ===== SUBMIT =====
+function submitSurvey() {
+  const vis = visibleQuestions();
+  const unanswered = vis.filter(q => !isAnswered(q.id)).map(q=>q.id);
+  if (unanswered.length > 0) {
+    showToast(`还有 ${unanswered.length} 题未回答，请检查后再提交`);
+    const firstQ = document.querySelector(`.q[data-qid="${unanswered[0]}"]`);
+    if (firstQ) firstQ.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  submitted = true;
+  showResults();
+  uploadToCloud();
+}
+
+async function uploadToCloud() {
+  const statusEl = document.getElementById('cloudStatus');
+  if (!statusEl) return;
+  statusEl.textContent = '⏳ 正在提交到云端...';
+  statusEl.style.color = '#888';
+
+  // Flatten answers into Supabase columns: q1, q2, ... q55
+  const row = { submitted_at: new Date().toISOString() };
+  for (let i = 1; i <= 55; i++) {
+    const val = answers[i];
+    if (val === undefined || val === null || val === '') {
+      row['q' + i] = null;
+    } else if (Array.isArray(val)) {
+      row['q' + i] = val.join('；');
+    } else {
+      row['q' + i] = String(val);
+    }
+  }
+
+  // If not configured, skip
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+    statusEl.textContent = '⚠️ 未配置 Supabase（请替换 SUPABASE_URL 和 SUPABASE_KEY）';
+    statusEl.style.color = '#c09853';
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(row)
+    });
+    if (resp.ok) {
+      statusEl.innerHTML = '✅ 已提交到云端';
+      statusEl.style.color = '#4a8';
+    } else {
+      const err = await resp.text();
+      statusEl.textContent = `❌ 提交失败：${resp.status} ${err}`;
+      statusEl.style.color = '#c44';
+    }
+  } catch(e) {
+    statusEl.textContent = `❌ 网络错误：${e.message}`;
+    statusEl.style.color = '#c44';
+  }
+}
+
+// ===== 恋爱画像分析 =====
+const DATING_TYPES = [
+  { id:'romantic', name:'浪漫理想家', emoji:'💕', color:'#c44d6a,#e898a8',
+    tags:['认真','浪漫','乐观','婚姻导向','相信爱情'],
+    desc:'你相信校园恋爱的美好，期待它能走向未来。对你来说，恋爱是大学不可或缺的一部分——不是将就，而是真心遇见。你带着认真的态度投入感情，也愿意相信它不会止步于毕业。',
+    sub:'「爱是大学的必修课，而你是认真上课的那个人。」',
+    test:s=>s[14]>=4&&s[16]>=4&&s[15]<=3 },
+  { id:'realist', name:'理性务实者', emoji:'🧠', color:'#5b7db5,#8aa8d8',
+    tags:['清醒','独立','务实','学业优先','理性'],
+    desc:'你对校园恋爱保持清醒的认知——不太相信「必修课」说法，也不太迷信毕业不分手。你更看重学业和个人发展，感情有更好，没有也不强求。你的理智是你情感世界最好的保护色。',
+    sub:'「清醒地爱，比盲目地投入更需要勇气。」',
+    test:s=>s[14]<=2&&s[15]>=4 },
+  { id:'traditional', name:'传统守护者', emoji:'🏡', color:'#8b7355,#b8a080',
+    tags:['稳重','传统','家庭','安全感','责任'],
+    desc:'你重视门当户对，认同一定的性别角色分工，谈恋爱时也会考虑家庭的看法。你的恋爱观深受成长环境影响，追求的是一份踏实、稳定、能被家人祝福的关系。',
+    sub:'「传统不是束缚，是你对安全感的定义。」',
+    test:s=>s[18]>=4&&s[19]>=4&&s[16]>=3 },
+  { id:'free', name:'自由探索者', emoji:'🕊️', color:'#5d9b7c,#8cc4a8',
+    tags:['平等','自由','开放','反传统','真实'],
+    desc:'你对非传统关系持开放态度，不认为花费该由男方承担，也不太在意门当户对。在你的世界里，恋爱应该是两个人的平等探索，不被条条框框约束。你追求的是真实的连接，而不是社会的剧本。',
+    sub:'「爱是两个人的事，规则由你们自己定义。」',
+    test:s=>s[17]>=4&&s[19]<=2&&s[18]<=2 },
+  { id:'casual', name:'随性体验派', emoji:'🍃', color:'#c4956a,#e0b890',
+    tags:['随缘','轻松','当下','体验','自由'],
+    desc:'你不会把恋爱看得太重——有合适的就谈，没有也无所谓。你不急着结婚，也不太被传统观念束缚。对你来说，大学恋爱更多是当下的一种陪伴和体验，而不是沉重的承诺。',
+    sub:'「不定义关系，只享受此刻。」',
+    test:s=>s[14]<=3&&s[16]<=2&&s[17]>=3 },
+  { id:'mix', name:'独特混合型', emoji:'🎨', color:'#8b6b8b,#b898b8',
+    tags:['复杂','独特','矛盾','多元','真实'],
+    desc:'你的恋爱观念不太好归类——既有浪漫的一面，又有理性的考量；有些观念传统，有些又很开放。这种「矛盾」恰恰是你最真实的样子：你不活在标签里，而是根据自己的感受做判断。',
+    sub:'「复杂的你，值得一份不被定义的爱。」',
+    test:()=>true }
+];
+
+function score(val) { const v=parseInt(val); return isNaN(v)?3:v; }
+function ansStr(qid) {
+  const v=answers[qid]; if(!v) return '';
+  const q=ALL_QUESTIONS.find(q=>q.id===qid); if(!q) return v;
+  if(Array.isArray(v)) return v.map(x=>{const o=q.opts.find(o=>o.v===x);return o?o.v+'. '+o.t:x;}).join('；');
+  if(q.type==='likert') return v+' 分';
+  const o=q.opts?.find(o=>o.v===v); return o?o.v+'. '+o.t:v;
+}
+
+function generateProfile() {
+  const dims = {
+    labels: ['恋爱必要感','现实悲观度','婚姻导向','关系开放度','门第重视','传统性别观'],
+    qids: [14,15,16,17,18,19],
+    scores: [14,15,16,17,18,19].map(id=>score(answers[id]||3))
+  };
+  let matched = DATING_TYPES.find(t=>t.test(Object.fromEntries(dims.qids.map((id,i)=>[id,dims.scores[i]]))));
+  if (!matched) matched = DATING_TYPES[DATING_TYPES.length-1];
+  return { ...matched, dimensions: dims };
+}
+
+function generateInsights() {
+  const list = [];
+  // 恋爱状态
+  const q6 = answers[6];
+  if (q6==='A') list.push({icon:'💬',text:'你正在一段关系中。保持沟通，记得在爱别人的同时也照顾好自己。'});
+  else if (q6==='B') list.push({icon:'🌱',text:'你还没有开始第一段恋情。每个人的花期不同，不必因为周围人都在谈而感到压力。'});
+  else if (q6==='C') list.push({icon:'🌿',text:'你曾经恋爱过，目前单身。每段经历都是成长，下一段你会更清楚自己想要什么。'});
+  else if (q6==='D') list.push({icon:'🤔',text:'你处于暧昧状态。不确定的关系最消耗心力——也许是时候直面那个问题了。'});
+
+  // 恋爱脑
+  if (answers[29]==='A') list.push({icon:'⚠️',text:'你正在经历「恋爱脑」状态。提醒自己：好的爱情不会要求你放弃自我、学业和朋友。'});
+  else if (answers[29]==='B') list.push({icon:'🌟',text:'你曾经恋爱脑，现在走出来了。那个过程可能很痛，但你已经成长了。'});
+
+  // 冲突处理
+  if (answers[28]==='B') list.push({icon:'🔧',text:'你习惯冷战。沉默不会让问题消失——下次试着先说第一句话，哪怕只是一句「我们聊聊」。'});
+  else if (answers[28]==='D') list.push({icon:'🔧',text:'你倾向于回避冲突。假装没事只能换来暂时的平静，直面问题才能解决根源。'});
+  else if (answers[28]==='E') list.push({icon:'🔧',text:'你容易用「分手」解决问题。试着区分「一时生气」和「真的不合适」——前者可以通过沟通修复。'});
+
+  // 经济压力
+  if (answers[49]==='A') list.push({icon:'💰',text:'恋爱消费给你带来很大压力。坦诚地和对方聊聊预算——真正喜欢你的人不会希望你为此焦虑。'});
+  else if (answers[49]==='B') list.push({icon:'💰',text:'恋爱消费有一定压力。可以多创造一些低成本的约会方式：散步、自习、一起做饭，比花钱更动人。'});
+
+  // 心理健康
+  if (answers[51]==='A') list.push({icon:'🫂',text:'你经历过较深的失恋创伤。如果那段时间还没完全过去，学校的心理咨询中心是一个值得尝试的选择。'});
+  if (answers[53]==='A') list.push({icon:'💭',text:'你在关系中常常感到孤独——两个人在一起却比一个人更孤单。这往往不是因为不够爱，而是沟通的桥断了。'});
+  if (score(answers[54])>=4) list.push({icon:'🪞',text:'你的自我价值感容易随恋爱状态波动。记住：有伴侣的你和单身的你，是同一个人——你的价值不取决于谁在你身边。'});
+
+  // 网恋
+  if (answers[12]==='A') list.push({icon:'🌐',text:'你有过奔现经历。线上到线下的跨越需要勇气的——无论结果如何，那都是真实的。'});
+
+  // 性教育
+  if (answers[37]==='C') list.push({icon:'📚',text:'你从未在学校接受过系统性的性教育。这不是你的问题——可以考虑通过正规渠道（丁香医生、KnowYourself等）补充这方面的知识。'});
+
+  if (list.length===0) list.push({icon:'✨',text:'你的恋爱状态似乎比较平稳。无论是单身还是恋爱中，享受当下，保持对爱的好奇心和勇气。'});
+  return list.slice(0,5);
+}
+
+function generateTags(profile) {
+  return profile.tags || [];
+}
+
+// ===== 结果页渲染 =====
+function showResults() {
+  const main = document.getElementById('main');
+  const profile = generateProfile();
+  const insights = generateInsights();
+  const tags = generateTags(profile);
+  const vis = visibleQuestions();
+  const dims = profile.dimensions;
+
+  let html = '';
+
+  // --- Hero ---
+  html += '<div class="result-hero">';
+  html += '<h2>你的恋爱观念画像</h2>';
+  html += '<p class="result-subtitle">基于 55 道题的回答生成</p>';
+  html += '</div>';
+
+  // --- 类型徽章 ---
+  html += `<div class="type-badge-card" style="background:linear-gradient(135deg,${profile.color})">`;
+  html += `<span class="big-emoji">${profile.emoji}</span>`;
+  html += `<div class="type-name">${profile.name}</div>`;
+  html += `<div class="type-subtitle">${profile.sub}</div>`;
+  html += `<p class="type-desc">${profile.desc}</p>`;
+  html += '</div>';
+
+  // --- 维度进度条 ---
+  html += '<div class="dims-card"><h3>📊 六维分析</h3>';
+  for (let i = 0; i < dims.labels.length; i++) {
+    const pct = Math.round(dims.scores[i] / 5 * 100);
+    html += `<div class="dim-row">`;
+    html += `<span class="dim-label">${dims.labels[i]}</span>`;
+    html += `<div class="dim-bar-wrap"><div class="dim-bar-fill" style="width:0%;background:linear-gradient(90deg,${profile.color})" data-width="${pct}%"></div></div>`;
+    html += `<span class="dim-score">${dims.scores[i]}/5</span>`;
+    html += `</div>`;
+  }
+  html += '</div>';
+
+  // --- 雷达图 ---
+  html += '<div class="chart-card"><canvas id="radarChart"></canvas></div>';
+
+  // --- 标签 ---
+  if (tags.length > 0) {
+    html += '<div class="tags-card"><h3 style="color:var(--rose-dark);margin-bottom:10px;font-size:.95rem;">🔖 关键词</h3>';
+    for (const t of tags) {
+      html += `<span class="tag">${t}</span>`;
+    }
+    html += '</div>';
+  }
+
+  // --- 洞察 ---
+  html += '<div class="insights-card"><h3>📋 关于你的发现</h3>';
+  for (const item of insights) {
+    html += `<div class="insight-item"><span class="insight-icon">${item.icon}</span><span class="insight-text">${item.text}</span></div>`;
+  }
+  html += '</div>';
+
+  // --- 答案折叠 ---
+  html += '<div class="answers-detail" style="text-align:center;">';
+  html += '<button class="answers-toggle" id="answersToggle" onclick="toggleAnswers()">📝 查看完整回答记录</button>';
+  html += '<div id="answersContent" style="display:none;margin-top:16px;text-align:left;">';
+  let currentSec = '';
+  for (const q of vis) {
+    if (q.sec !== currentSec) {
+      if (currentSec) html += '</div>';
+      currentSec = q.sec;
+      html += `<div class="result-section"><h3>${currentSec}</h3>`;
+    }
+    html += `<div class="result-item"><span class="q-text">${q.id}. ${q.text}</span><span class="a-text">${ansStr(q.id)||'<span style="color:#999">（未回答）</span>'}</span></div>`;
+  }
+  if (currentSec) html += '</div>';
+  html += '</div></div>';
+
+  // --- 操作区 ---
+  html += '<div style="text-align:center;margin-top:12px;">';
+  html += '<div id="cloudStatus" style="font-size:.9rem;margin-bottom:8px;"></div>';
+  html += '<button class="btn btn-outline" onclick="downloadJSON()" style="margin-right:8px;">📥 下载 JSON</button>';
+  html += '<button class="btn btn-outline" onclick="resetSurvey()">🔄 重新填写</button>';
+  html += '</div>';
+
+  main.innerHTML = html;
+  document.getElementById('actionArea').style.display = 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // 画雷达图
+  setTimeout(()=>drawRadarChart(dims), 120);
+  // 动画填充维度条
+  setTimeout(()=>{
+    document.querySelectorAll('.dim-bar-fill').forEach(bar=>{
+      bar.style.width = bar.dataset.width;
+    });
+  }, 200);
+}
+
+let answersVisible = false;
+function toggleAnswers() {
+  answersVisible = !answersVisible;
+  const el = document.getElementById('answersContent');
+  const btn = document.getElementById('answersToggle');
+  if (el) el.style.display = answersVisible ? 'block' : 'none';
+  if (btn) btn.textContent = answersVisible ? '📝 收起回答记录' : '📝 查看完整回答记录';
+}
+
+function drawRadarChart(dims) {
+  const canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  const N = dims.labels.length;
+  const size = Math.min(canvas.parentElement.clientWidth, 380);
+  canvas.width = size * 2;
+  canvas.height = size * 2;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  const cx = size, cy = size, r = size * 0.6;
+  const levels = 5;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Grid polygons
+  for (let lev = 1; lev <= levels; lev++) {
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const angle = Math.PI * 2 * i / N - Math.PI / 2;
+      const lr = r * lev / levels;
+      const x = cx + lr * Math.cos(angle);
+      const y = cy + lr * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = '#e8dde0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axis lines
+  for (let i = 0; i < N; i++) {
+    const angle = Math.PI * 2 * i / N - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    ctx.strokeStyle = '#e8dde0';
+    ctx.stroke();
+  }
+
+  // Data polygon
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const angle = Math.PI * 2 * i / N - Math.PI / 2;
+    const score = dims.scores[i] || 3;
+    const dr = r * score / levels;
+    const x = cx + dr * Math.cos(angle);
+    const y = cy + dr * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(196,77,106,0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(196,77,106,0.85)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Data points
+  for (let i = 0; i < N; i++) {
+    const angle = Math.PI * 2 * i / N - Math.PI / 2;
+    const score = dims.scores[i] || 3;
+    const dr = r * score / levels;
+    const x = cx + dr * Math.cos(angle);
+    const y = cy + dr * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#c44d6a';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = '#555';
+  ctx.font = '600 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < N; i++) {
+    const angle = Math.PI * 2 * i / N - Math.PI / 2;
+    const lr = r + 30;
+    const x = cx + lr * Math.cos(angle);
+    const y = cy + lr * Math.sin(angle);
+    ctx.fillText(dims.labels[i], x, y);
+  }
+}
+
+function downloadJSON() {
+  const data = {timestamp:new Date().toISOString(),answers};
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = 'survey-college-dating-answers.json';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('已下载 JSON 文件');
+}
+
+function resetSurvey() {
+  if (submitted || Object.keys(answers).length > 0) {
+    if (!confirm('确定要清除所有回答重新填写吗？此操作不可恢复。')) return;
+  }
+  answers = {};
+  submitted = false;
+  try { localStorage.removeItem('survey_college_dating'); } catch(e) {}
+  document.getElementById('actionArea').style.display = '';
+  renderAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ===== INIT =====
+loadFromLocal();
+renderAll();
+
+// Warn before leaving
+window.addEventListener('beforeunload', e=>{
+  if (!submitted && countAnswered() > 0) {
+    e.preventDefault(); e.returnValue = '';
+  }
+});
+</script>
+</body>
+</html>
