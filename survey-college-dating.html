@@ -155,23 +155,6 @@
   .btn-outline:hover { background: var(--rose-light); }
   .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  /* Results */
-  .result-card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 32px 24px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
-  }
-  .result-section { margin-bottom: 20px; }
-  .result-section h3 {
-    font-size: 1rem; color: var(--rose-dark); margin-bottom: 10px;
-    padding-bottom: 6px; border-bottom: 1px solid var(--rose-light);
-  }
-  .result-item {
-    display: flex; justify-content: space-between; padding: 4px 0;
-    font-size: .88rem;
-  }
-  .result-item .q-text { color: var(--text-muted); flex: 1; }
-  .result-item .a-text { font-weight: 600; text-align: right; max-width: 55%; }
-
   /* Toast */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -188,83 +171,130 @@
     .likert-circle { width: 24px; height: 24px; font-size: .7rem; }
   }
 
-  /* ===== 结果页 ===== */
-  #main .result-hero {
-    text-align: center; padding: 8px 0 20px;
-  }
-  #main .result-hero h2 { color: var(--rose-dark); margin-bottom: 4px; font-size: 1.3rem; }
-  #main .result-subtitle { color: var(--text-muted); font-size: .85rem; }
+  /* ===== 结果页（简则风格 + 6 类型配色） ===== */
+  /* 类型强调色由 JS 动态写入 #main 的 --acc / --acc2 / --acc-rgb */
 
-  /* 类型徽章 */
-  #main .type-badge-card {
-    border-radius: 20px; padding: 32px 20px 24px; margin-bottom: 16px;
-    text-align: center; color: #fff;
-    box-shadow: 0 4px 20px rgba(0,0,0,.10);
-    animation: fadeInUp .5s cubic-bezier(0.16,1,0.3,1);
+  /* 主卡 Hero */
+  #main .rs-hero {
+    border-radius: 14px; overflow: hidden; margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--acc), var(--acc2));
+    box-shadow: 0 6px 18px rgba(var(--acc-rgb), .28);
+    position: relative;
   }
-  #main .type-badge-card .big-emoji { font-size: 3.5rem; display: block; margin-bottom: 8px; }
-  #main .type-badge-card .type-name { font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; margin-bottom: 4px; }
-  #main .type-badge-card .type-subtitle { font-size: .9rem; opacity: .9; font-style: italic; max-width: 320px; margin: 0 auto; }
-  #main .type-badge-card .type-desc { font-size: .85rem; opacity: .92; max-width: 420px; margin: 12px auto 0; line-height: 1.7; }
+  #main .rs-hero::after {
+    content: ''; position: absolute; right: -24px; top: -24px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,.12);
+  }
+  #main .rs-hero-top { padding: 22px 20px 16px; position: relative; z-index: 1; }
+  #main .rs-kicker {
+    display: inline-block; font-size: 11px; color: #fff;
+    background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35);
+    padding: 3px 10px; border-radius: 99px; letter-spacing: 1px;
+  }
+  #main .rs-hero-name { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  #main .rs-emoji { font-size: 44px; line-height: 1; }
+  #main .rs-hero-name h1 { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: 1px; }
+  #main .rs-hero-sub { margin-top: 10px; font-size: 13px; color: rgba(255,255,255,.95); font-style: italic; line-height: 1.6; }
+  #main .rs-hero-body { background: #fff; padding: 16px 20px 20px; position: relative; z-index: 1; }
+  #main .rs-hero-desc { font-size: 14px; color: #2e1f4a; line-height: 1.9; }
+  #main .rs-hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  #main .rs-tag {
+    font-size: 12px; color: var(--acc);
+    background: rgba(var(--acc-rgb), .08);
+    border: 1px solid rgba(var(--acc-rgb), .22);
+    padding: 3px 11px; border-radius: 99px; line-height: 1.6;
+  }
 
-  /* 维度进度条 */
-  #main .dims-card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 24px 20px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+  /* 板块卡片 */
+  #main .rs-card {
+    background: #fff; border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(46,31,74,.05);
   }
-  #main .dims-card h3 { color: var(--rose-dark); margin-bottom: 16px; font-size: 1rem; }
-  #main .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  #main .dim-label { width: 75px; font-size: .82rem; font-weight: 600; color: #555; text-align: right; flex-shrink: 0; }
-  #main .dim-bar-wrap { flex: 1; height: 22px; background: #f0eaec; border-radius: 11px; overflow: hidden; position: relative; }
-  #main .dim-bar-fill { height: 100%; border-radius: 11px; transition: width .8s cubic-bezier(0.16,1,0.3,1); }
-  #main .dim-score { width: 32px; font-size: .8rem; font-weight: 700; color: #888; text-align: center; }
+  #main .rs-sec-head { position: relative; padding: 16px 16px 0 16px; }
+  #main .rs-english {
+    font-size: 10px; color: #36235c; letter-spacing: 1.6px;
+    text-transform: uppercase; line-height: 1; margin-bottom: 5px;
+  }
+  #main .rs-title {
+    position: relative; display: inline-block; z-index: 2;
+    font-size: 18px; font-weight: 600; color: var(--acc); line-height: 1.45;
+  }
+  #main .rs-square {
+    position: absolute; width: 10px; height: 10px; background: #ebe8ef;
+    bottom: 3px; right: -4px; z-index: -1;
+  }
+  #main .rs-rule {
+    position: absolute; left: 100%; margin-left: 10px; top: 50%;
+    height: 1px; width: 1000px; background: #f5f3f8; z-index: -1;
+  }
+  #main .rs-sec-no {
+    position: absolute; right: 16px; top: 16px;
+    font-size: 11px; color: var(--acc); opacity: .4;
+  }
+  #main .rs-sec-body { padding: 12px 16px 18px; }
+
+  /* 维度条 */
+  #main .rs-dim { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
+  #main .rs-dim:last-child { margin-bottom: 0; }
+  #main .rs-dim-label { font-size: 13px; color: #2e1f4a; flex: 0 0 62px; font-weight: 500; }
+  #main .rs-dim-bar { position: relative; flex: 1; height: 9px; background: #ece9f2; border-radius: 99px; overflow: hidden; }
+  #main .rs-dim-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: linear-gradient(90deg, var(--acc), var(--acc2));
+    border-radius: 99px; transition: width .8s cubic-bezier(0.16,1,0.3,1);
+  }
+  #main .rs-dim-notch {
+    position: absolute; left: 50%; top: -1px; bottom: -1px; width: 2px;
+    background: #fff; transform: rotate(12deg); opacity: .9;
+  }
+  #main .rs-dim-score { font-size: 12px; color: #36235c; flex: 0 0 30px; text-align: right; }
 
   /* 雷达图 */
-  #main .chart-card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 16px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
-    text-align: center;
-  }
+  #main .rs-radar-wrap { display: flex; justify-content: center; padding: 4px 0 2px; }
+  #main .rs-radar-wrap canvas { max-width: 100%; }
 
-  /* 标签云 */
-  #main .tags-card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 16px 20px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
-    text-align: center;
+  /* 洞察 */
+  #main .rs-insight { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid #f5f3f8; }
+  #main .rs-insight:last-child { border-bottom: 0; padding-bottom: 0; }
+  #main .rs-insight:first-child { padding-top: 0; }
+  #main .rs-insight-icon {
+    flex: 0 0 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    background: rgba(var(--acc-rgb), .10); border-radius: 8px; font-size: 15px;
   }
-  #main .tag {
-    display: inline-block; padding: 4px 14px; border-radius: 14px;
-    font-size: .8rem; font-weight: 600; margin: 3px 4px;
-    background: #fdf2f5; color: #c44d6a; border: 1px solid #f0d0d8;
-  }
+  #main .rs-insight-text { font-size: 13px; color: #2e1f4a; line-height: 1.75; flex: 1; }
 
-  /* 洞察卡片 */
-  #main .insights-card {
-    background: var(--card-bg); border-radius: var(--radius); padding: 24px 20px;
-    box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
+  /* 回答记录 */
+  #main .rs-ans-toggle {
+    width: 100%; padding: 12px; background: #fff; border: none; cursor: pointer;
+    font-size: 13px; color: var(--acc); font-weight: 600; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-  #main .insights-card h3 { color: var(--rose-dark); margin-bottom: 14px; font-size: 1rem; }
-  #main .insight-item {
-    display: flex; gap: 10px; padding: 12px 14px; margin-bottom: 8px;
-    background: #fdf8f9; border-radius: 10px; font-size: .88rem; line-height: 1.6;
-    border-left: 3px solid var(--rose);
+  #main .rs-ans-toggle::after { content: '▾'; font-size: 11px; transition: transform .2s; }
+  #main .rs-ans-toggle.open::after { transform: rotate(180deg); }
+  #main .rs-ans-body { padding: 0 16px 16px; }
+  #main .rs-ans-sec { margin-top: 14px; }
+  #main .rs-ans-sec:first-child { margin-top: 0; }
+  #main .rs-ans-sec-title { font-size: 12px; color: var(--acc); font-weight: 600; margin-bottom: 4px; }
+  #main .rs-ans-item {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 9px 0; border-bottom: 1px dashed #ece9f2; font-size: 12.5px;
   }
-  #main .insight-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
-  #main .insight-text { color: #444; }
+  #main .rs-ans-item:last-child { border-bottom: 0; }
+  #main .rs-ans-q { color: #36235c; flex: 1; }
+  #main .rs-ans-a { color: var(--acc); font-weight: 600; text-align: right; max-width: 55%; }
 
-  /* 答案折叠 */
-  #main .answers-detail { margin-top: 16px; }
-  #main .answers-toggle {
-    background: none; border: 1px dashed #ccc; color: #999; font-size: .82rem;
-    padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all var(--transition);
-  }
-  #main .answers-toggle:hover { border-color: var(--rose); color: var(--rose); }
+  /* 操作区 */
+  #main .rs-actions { text-align: center; margin-top: 14px; padding: 0 4px; }
+  #main .rs-actions .btn-outline { color: var(--acc); border-color: var(--acc); }
+  #main .rs-actions .btn-outline:hover { background: rgba(var(--acc-rgb), .08); }
 
   /* 动画 */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+  @keyframes rsFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  #main .rs-card, #main .rs-hero { animation: rsFadeIn .4s ease both; }
 
 </style>
 </head>
@@ -288,11 +318,11 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/2.28.6/cloudbase.full.js"></script>
 <script>
-// ===== 数据存储：GitHub API =====
-const GH_TOKEN = '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';
-const GH_OWNER = 'yibaibai5';
-const GH_REPO = 'survey-dating';
+// ===== 数据存储：腾讯云开发 CloudBase =====
+const TCB_ENV_ID = 'q1-d2grdfw1rf96906db';
+const TCB_REGION = 'ap-shanghai';
 
 // ===== DATA =====
 const ALL_QUESTIONS = [
@@ -585,33 +615,16 @@ async function uploadToCloud() {
     payload.answers['q' + i] = Array.isArray(val) ? val.join('；') : String(val);
   }
 
-  const ts = new Date().toISOString().replace(/[:.]/g, '-');
-  const filename = 'data/' + ts + '.json';
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
-
   try {
-    const resp = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${filename}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + GH_TOKEN,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: '问卷提交 ' + ts,
-        content: content
-      })
-    });
-    if (resp.ok) {
-      statusEl.innerHTML = '✅ 已提交到云端';
-      statusEl.style.color = '#4a8';
-    } else {
-      const err = await resp.text();
-      statusEl.textContent = '❌ 服务器拒绝 (' + resp.status + '): ' + err.substring(0,200);
-      statusEl.style.color = '#c44';
-    }
+    if (typeof cloudbase === 'undefined') throw new Error('SDK 未加载');
+    const app = cloudbase.init({ env: TCB_ENV_ID, region: TCB_REGION });
+    const { error } = await app.auth.signInAnonymously();
+    if (error) throw new Error(error.message || '匿名登录失败');
+    await app.database().collection('survey_answers').add(payload);
+    statusEl.innerHTML = '✅ 已提交到云端';
+    statusEl.style.color = '#4a8';
   } catch(e) {
-    statusEl.textContent = '❌ 无法连接: ' + e.message;
+    statusEl.textContent = '❌ ' + (e && e.message ? e.message : e);
     statusEl.style.color = '#c44';
   }
 }
@@ -712,6 +725,13 @@ function generateTags(profile) {
 }
 
 // ===== 结果页渲染 =====
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  const full = h.length === 3 ? h.split('').map(c=>c+c).join('') : h;
+  const n = parseInt(full, 16);
+  return ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255);
+}
+
 function showResults() {
   const main = document.getElementById('main');
   const profile = generateProfile();
@@ -720,86 +740,106 @@ function showResults() {
   const vis = visibleQuestions();
   const dims = profile.dimensions;
 
+  // 类型强调色写入 CSS 变量（保留 6 类型各自配色）
+  const [c1, c2] = profile.color.split(',');
+  main.style.setProperty('--acc', c1);
+  main.style.setProperty('--acc2', c2);
+  main.style.setProperty('--acc-rgb', hexToRgb(c1));
+
   let html = '';
 
-  // --- Hero ---
-  html += '<div class="result-hero">';
-  html += '<h2>你的恋爱观念画像</h2>';
-  html += '<p class="result-subtitle">基于 55 道题的回答生成</p>';
-  html += '</div>';
+  // --- 主卡 Hero ---
+  html += `<div class="rs-hero">
+    <div class="rs-hero-top">
+      <span class="rs-kicker">你的恋爱类型</span>
+      <div class="rs-hero-name"><span class="rs-emoji">${profile.emoji}</span><h1>${profile.name}</h1></div>
+      <div class="rs-hero-sub">${profile.sub}</div>
+    </div>
+    <div class="rs-hero-body">
+      <p class="rs-hero-desc">${profile.desc}</p>
+      <div class="rs-hero-tags">${tags.map(t=>`<span class="rs-tag">${t}</span>`).join('')}</div>
+    </div>
+  </div>`;
 
-  // --- 类型徽章 ---
-  html += `<div class="type-badge-card" style="background:linear-gradient(135deg,${profile.color})">`;
-  html += `<span class="big-emoji">${profile.emoji}</span>`;
-  html += `<div class="type-name">${profile.name}</div>`;
-  html += `<div class="type-subtitle">${profile.sub}</div>`;
-  html += `<p class="type-desc">${profile.desc}</p>`;
-  html += '</div>';
+  // --- 01 六维分析 ---
+  html += `<div class="rs-card">
+    <div class="rs-sec-head">
+      <div class="rs-english">Six Dimensions</div>
+      <div class="rs-title">六维分析<span class="rs-square"></span><span class="rs-rule"></span></div>
+      <span class="rs-sec-no">01</span>
+    </div>
+    <div class="rs-sec-body">
+      ${dims.labels.map((lab,i)=>{
+        const pct = Math.round(dims.scores[i] / 5 * 100);
+        return `<div class="rs-dim">
+          <span class="rs-dim-label">${lab}</span>
+          <div class="rs-dim-bar"><div class="rs-dim-fill" data-w="${pct}%"></div><span class="rs-dim-notch"></span></div>
+          <span class="rs-dim-score">${dims.scores[i]}/5</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
 
-  // --- 维度进度条 ---
-  html += '<div class="dims-card"><h3>📊 六维分析</h3>';
-  for (let i = 0; i < dims.labels.length; i++) {
-    const pct = Math.round(dims.scores[i] / 5 * 100);
-    html += `<div class="dim-row">`;
-    html += `<span class="dim-label">${dims.labels[i]}</span>`;
-    html += `<div class="dim-bar-wrap"><div class="dim-bar-fill" style="width:0%;background:linear-gradient(90deg,${profile.color})" data-width="${pct}%"></div></div>`;
-    html += `<span class="dim-score">${dims.scores[i]}/5</span>`;
-    html += `</div>`;
-  }
-  html += '</div>';
+  // --- 02 维度雷达 ---
+  html += `<div class="rs-card">
+    <div class="rs-sec-head">
+      <div class="rs-english">Radar</div>
+      <div class="rs-title">维度雷达<span class="rs-square"></span><span class="rs-rule"></span></div>
+      <span class="rs-sec-no">02</span>
+    </div>
+    <div class="rs-sec-body rs-radar-wrap"><canvas id="radarChart"></canvas></div>
+  </div>`;
 
-  // --- 雷达图 ---
-  html += '<div class="chart-card"><canvas id="radarChart"></canvas></div>';
+  // --- 03 关于你的发现 ---
+  html += `<div class="rs-card">
+    <div class="rs-sec-head">
+      <div class="rs-english">Insights</div>
+      <div class="rs-title">关于你的发现<span class="rs-square"></span><span class="rs-rule"></span></div>
+      <span class="rs-sec-no">03</span>
+    </div>
+    <div class="rs-sec-body">
+      ${insights.map(i=>`<div class="rs-insight"><span class="rs-insight-icon">${i.icon}</span><span class="rs-insight-text">${i.text}</span></div>`).join('')}
+    </div>
+  </div>`;
 
-  // --- 标签 ---
-  if (tags.length > 0) {
-    html += '<div class="tags-card"><h3 style="color:var(--rose-dark);margin-bottom:10px;font-size:.95rem;">🔖 关键词</h3>';
-    for (const t of tags) {
-      html += `<span class="tag">${t}</span>`;
-    }
-    html += '</div>';
-  }
-
-  // --- 洞察 ---
-  html += '<div class="insights-card"><h3>📋 关于你的发现</h3>';
-  for (const item of insights) {
-    html += `<div class="insight-item"><span class="insight-icon">${item.icon}</span><span class="insight-text">${item.text}</span></div>`;
-  }
-  html += '</div>';
-
-  // --- 答案折叠 ---
-  html += '<div class="answers-detail" style="text-align:center;">';
-  html += '<button class="answers-toggle" id="answersToggle" onclick="toggleAnswers()">📝 查看完整回答记录</button>';
-  html += '<div id="answersContent" style="display:none;margin-top:16px;text-align:left;">';
+  // --- 04 回答记录 ---
+  html += `<div class="rs-card">
+    <div class="rs-sec-head">
+      <div class="rs-english">Answer Record</div>
+      <div class="rs-title">回答记录<span class="rs-square"></span><span class="rs-rule"></span></div>
+      <span class="rs-sec-no">04</span>
+    </div>
+    <button class="rs-ans-toggle" id="answersToggle" onclick="toggleAnswers()">查看完整回答记录</button>
+    <div id="answersContent" class="rs-ans-body" style="display:none">`;
   let currentSec = '';
   for (const q of vis) {
     if (q.sec !== currentSec) {
       if (currentSec) html += '</div>';
       currentSec = q.sec;
-      html += `<div class="result-section"><h3>${currentSec}</h3>`;
+      html += `<div class="rs-ans-sec"><div class="rs-ans-sec-title">${currentSec}</div>`;
     }
-    html += `<div class="result-item"><span class="q-text">${q.id}. ${q.text}</span><span class="a-text">${ansStr(q.id)||'<span style="color:#999">（未回答）</span>'}</span></div>`;
+    html += `<div class="rs-ans-item"><span class="rs-ans-q">${q.id}. ${q.text}</span><span class="rs-ans-a">${ansStr(q.id)||'<span style="color:#999">（未回答）</span>'}</span></div>`;
   }
   if (currentSec) html += '</div>';
   html += '</div></div>';
 
   // --- 操作区 ---
-  html += '<div style="text-align:center;margin-top:12px;">';
-  html += '<div id="cloudStatus" style="font-size:.9rem;margin-bottom:8px;"></div>';
-  html += '<button class="btn btn-outline" onclick="downloadJSON()" style="margin-right:8px;">📥 下载 JSON</button>';
-  html += '<button class="btn btn-outline" onclick="resetSurvey()">🔄 重新填写</button>';
-  html += '</div>';
+  html += `<div class="rs-actions">
+    <div id="cloudStatus" style="font-size:.85rem;margin-bottom:10px;color:#9b8bb5;"></div>
+    <button class="btn btn-outline" onclick="downloadJSON()" style="margin-right:8px;">📥 下载 JSON</button>
+    <button class="btn btn-outline" onclick="resetSurvey()">🔄 重新填写</button>
+  </div>`;
 
   main.innerHTML = html;
   document.getElementById('actionArea').style.display = 'none';
   window.scrollTo({top:0,behavior:'smooth'});
 
   // 画雷达图
-  setTimeout(()=>drawRadarChart(dims), 120);
+  setTimeout(()=>drawRadarChart(dims, c1), 120);
   // 动画填充维度条
   setTimeout(()=>{
-    document.querySelectorAll('.dim-bar-fill').forEach(bar=>{
-      bar.style.width = bar.dataset.width;
+    document.querySelectorAll('.rs-dim-fill').forEach(bar=>{
+      bar.style.width = bar.dataset.w;
     });
   }, 200);
 }
@@ -810,12 +850,13 @@ function toggleAnswers() {
   const el = document.getElementById('answersContent');
   const btn = document.getElementById('answersToggle');
   if (el) el.style.display = answersVisible ? 'block' : 'none';
-  if (btn) btn.textContent = answersVisible ? '📝 收起回答记录' : '📝 查看完整回答记录';
+  if (btn) { btn.classList.toggle('open', answersVisible); btn.textContent = answersVisible ? '收起回答记录' : '查看完整回答记录'; }
 }
 
-function drawRadarChart(dims) {
+function drawRadarChart(dims, accent) {
   const canvas = document.getElementById('radarChart');
   if (!canvas) return;
+  const rgb = hexToRgb(accent);
   const N = dims.labels.length;
   const size = Math.min(canvas.parentElement.clientWidth, 380);
   canvas.width = size * 2;
@@ -839,7 +880,7 @@ function drawRadarChart(dims) {
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.strokeStyle = '#e8dde0';
+    ctx.strokeStyle = '#e9e4f0';
     ctx.lineWidth = 1;
     ctx.stroke();
   }
@@ -850,7 +891,7 @@ function drawRadarChart(dims) {
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-    ctx.strokeStyle = '#e8dde0';
+    ctx.strokeStyle = '#e9e4f0';
     ctx.stroke();
   }
 
@@ -865,9 +906,9 @@ function drawRadarChart(dims) {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(196,77,106,0.15)';
+  ctx.fillStyle = 'rgba(' + rgb + ',0.15)';
   ctx.fill();
-  ctx.strokeStyle = 'rgba(196,77,106,0.85)';
+  ctx.strokeStyle = 'rgba(' + rgb + ',0.85)';
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
@@ -880,7 +921,7 @@ function drawRadarChart(dims) {
     const y = cy + dr * Math.sin(angle);
     ctx.beginPath();
     ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#c44d6a';
+    ctx.fillStyle = accent;
     ctx.fill();
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
@@ -888,7 +929,7 @@ function drawRadarChart(dims) {
   }
 
   // Labels
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = '#36235c';
   ctx.font = '600 12px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
