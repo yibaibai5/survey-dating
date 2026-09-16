@@ -318,11 +318,12 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://static.cloudbase.net/cloudbase-js-sdk/2.28.6/cloudbase.full.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/3.9.4/cloudbase.full.js"></script>
 <script>
-// ===== 数据存储：腾讯云开发 CloudBase =====
+// ===== 数据存储：腾讯云开发 CloudBase（PostgreSQL，app.rdb） =====
 const TCB_ENV_ID = 'q1-d2grdfw1rf96906db';
 const TCB_REGION = 'ap-shanghai';
+const TCB_ACCESS_KEY = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjA5YTcwMWExLWUzMDYtNGExYy04ZWM1LThhZjBjNWQ5M2UyMiJ9.eyJpc3MiOiJodHRwczovL3ExLWQyZ3JkZncxcmY5NjkwNmRiLmFwLXNoYW5naGFpLnRjYi1hcGkudGVuY2VudGNsb3VkYXBpLmNvbSIsInN1YiI6ImFub24iLCJhdWQiOiJxMS1kMmdyZGZ3MXJmOTY5MDZkYiIsImV4cCI6NDA5MzE3MDI3OSwiaWF0IjoxNzg5NDg3MDc5LCJub25jZSI6InNCc2o1WDhDUnAyLWJncGdSSUVyOWciLCJhdF9oYXNoIjoic0JzajVYOENScDItYmdwZ1JJRXI5ZyIsIm5hbWUiOiJBbm9ueW1vdXMiLCJzY29wZSI6ImFub255bW91cyIsInByb2plY3RfaWQiOiJxMS1kMmdyZGZ3MXJmOTY5MDZkYiIsIm1ldGEiOnsicGxhdGZvcm0iOiJQdWJsaXNoYWJsZUtleSJ9LCJyb2xlIjoiYW5vbiIsImlzX2Fub255bW91cyI6dHJ1ZSwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiYW5vbnltb3VzIiwicHJvdmlkZXJzIjpbImFub255bW91cyJdfSwidXNlcl9tZXRhZGF0YSI6eyJuYW1lIjoiQW5vbnltb3VzIn0sInVzZXJfdHlwZSI6IiIsImNsaWVudF90eXBlIjoiY2xpZW50X3VzZXIiLCJpc19zeXN0ZW1fYWRtaW4iOmZhbHNlfQ.AiZ3wkkKGyuvDzueu4aHG5v_yJKT2z_ywvJr_Zm1QMR8P7uz_jYrh_dTy9bGAegNpE5qlq8QVn1AOsKuPollAbHOCAetbhBJXHz3zvj3TuR5a0f0lHsVD-f1GgUuE2kJH6ALmIjcz4hsmKVKu-0Bx06iE-z8kej10onx_81ccr3pbUESGCuPTuhOhAkyztCvCegQfbBZaBFrxhI6m4ohwKD_F7csRrPOdz80z81UzozICZbrwKHG3E4ATJQRXYJ1MqwxOdNyJpPmAwrQqS7o7CvSDn6kA9MyqyPrwRiauh-idwyh0qb-bCXqDCrVeAPxon8hGBstotHqsecS83j9hw';
 
 // ===== DATA =====
 const ALL_QUESTIONS = [
@@ -617,10 +618,9 @@ async function uploadToCloud() {
 
   try {
     if (typeof cloudbase === 'undefined') throw new Error('SDK 未加载');
-    const app = cloudbase.init({ env: TCB_ENV_ID, region: TCB_REGION });
-    const { error } = await app.auth.signInAnonymously();
-    if (error) throw new Error(error.message || '匿名登录失败');
-    await app.database().collection('survey_answers').add(payload);
+    const app = cloudbase.init({ env: TCB_ENV_ID, region: TCB_REGION, accessKey: TCB_ACCESS_KEY });
+    const { error } = await app.rdb().from('survey_answers').insert({ data: payload });
+    if (error) throw new Error(error.message || '写入失败');
     statusEl.innerHTML = '✅ 已提交到云端';
     statusEl.style.color = '#4a8';
   } catch(e) {
